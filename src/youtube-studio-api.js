@@ -219,6 +219,22 @@ async function getVideoClaims(videoId) {
         .then(res => res.json())
 }
 
+async function getVideoClaimInfo(videoId, claimId) {
+    const template = _.cloneDeep(get_creator_videos_template)
+
+    _.set(template, 'channelId', config.CHANNEL_ID);
+    _.set(template, 'context.user.onBehalfOfUser', config.DELEGATED_SESSION_ID);
+    _.set(template, 'videoId', videoId);
+    _.set(template, 'claimId', claimId);
+
+    return fetch(`${YT_STUDIO_URL}/youtubei/v1/copyright/get_creator_received_claim_matches?alt=json&key=${config.INNERTUBE_API_KEY}`, {
+        method: 'POST',
+        headers,
+        body: `${JSON.stringify(template)}`
+    })
+        .then(res => res.json())
+}
+
 async function getVideo(videoId) {
     const template = get_creator_videos_template;
 
@@ -727,5 +743,6 @@ module.exports = {
     getVideos,
     setInfoCards,
     getVideoClaims,
+    getVideoClaimInfo,
     upload
 }
